@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>ToolSync Home</title>
+   <style>
+       body {
+           background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+           font-family: Arial, sans-serif;
+       }
+
+       .container {
+           border: 8px solid red;
+           width: 90%;
+           height: 90%;
+           padding: 20px;
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+           align-items: center;
+           box-sizing: border-box;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+           background-color: white;
+           border-radius: 8px;
+           position: relative;
+       }
+
+       .header {
+           position: absolute;
+           top: 10px;
+           left: 10px;
+           text-align: left;
+       }
+
+       .header h2 {
+           margin: 0;
+           font-size: 1.5em;
+           font-weight: bold;
+           color: #333;
+       }
+
+       .header hr {
+           border: none;
+           border-top: 2px solid #333;
+           width: 200px;
+           margin: 5px 0;
+       }
+
+       .header p {
+           margin: 0;
+           font-style: italic;
+           font-size: 1em;
+           color: #666;
+       }
+
+       h1 {
+           font-size: 2.5em;
+           font-weight: bold;
+           color: #222;
+           margin-bottom: 20px;
+       }
+
+       p {
+           font-size: 1.1em;
+           color: #555;
+           text-align: center;
+       }
+
+       .password-box {
+           margin-top: 20px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+       }
+
+       .password-box input[type="password"] {
+           padding: 10px;
+           font-size: 16px;
+           margin-bottom: 10px;
+           width: 100%;
+           max-width: 300px;
+           border: 1px solid #ccc;
+           border-radius: 5px;
+       }
+
+       .password-box button {
+           padding: 10px 20px;
+           font-size: 16px;
+           cursor: pointer;
+           background-color: #007bff;
+           color: white;
+           border: none;
+           border-radius: 5px;
+           transition: background-color 0.3s;
+       }
+
+       .password-box button:hover {
+           background-color: #0056b3;
+       }
+
+       .footer {
+           position: absolute;
+           bottom: 10px;
+           left: 10px;
+           font-size: 14px;
+           color: #555;
+       }
+   </style>
+</head>
+<body>
+   <div class="container">
+       <!-- Header content with "Halliburton" and "Lafayette Manufacturing (2054)" -->
+       <div class="header">
+           <h2>Halliburton</h2>
+           <hr>
+           <p>Lafayette Manufacturing (2054)</p>
+       </div>
+
+       <h1>Welcome to ToolSync</h1>
+       <p>This is where we keep your tools in sync.</p>
+
+       <!-- Password input box for access -->
+       <div class="password-box">
+           <input type="password" id="password" placeholder="Enter Password">
+           <button onclick="checkPassword()">Enter</button>
+       </div>
+
+       <!-- Footer text for creator credit inside the container, bottom left -->
+       <div class="footer">Created by Jaden Sittig</div>
+   </div>
+
+   <script>
+       function checkPassword() {
+           const password = document.getElementById('password').value;
+           if (password === '0495') {
+               window.location.href = "tools.html";
+           } else {
+               alert("Incorrect password. Please try again.");
+           }
+       }
+   </script>
+</body>
+</html>
