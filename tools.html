@@ -14,246 +14,219 @@
             padding: 0;
             height: 100%;
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: #f7f7f7;
+            overflow: hidden; /* Prevent page scrolling */
         }
 
         .page-container {
-            border: 2px solid rgba(0, 0, 0, 0.884);
-            padding: 20px;
-            width: 98%;
-            height: 90%;
+            width: 800px;
+            margin: 50px auto; /* Add space at the top */
+            height: 1200px; /* Set the adjusted height */
             display: flex;
             flex-direction: column;
             align-items: center;
+            border: 2px solid black;
+            background-color: white;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+            width: calc(100% - 20px);
+            max-width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ddd;
         }
 
         .tool-list-section {
-            width: 100%;
             border: 2px solid red;
-            padding: 20px;
-            max-width: 800px;
-            max-height: 300px;
-            overflow-y: auto;
-            text-align: center;
-            margin: 0 auto;
-        }
-
-        .tool-form, .update-section, .search-form, .machine-finder {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .update-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid #ee0909f3;
             padding: 15px;
-            margin-top: 20px;
-            width: 70%;
-            max-width: 800px;
-            background-color: #eeeeeed3;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-height: 300px; /* Fixed height for the tool list */
+            overflow-y: auto; /* Enable scrolling within the tool list */
+            width: 100%;
         }
 
-        .tool-table {
+        .tool-list-section h2 {
+            margin-top: 0;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
 
-        .tool-table th, .tool-table td {
-            border: 1px solid #000000;
+        table th, table td {
+            border: 1px solid black;
             padding: 8px;
-            text-align: left;
+            text-align: center;
         }
 
-        .tool-table th {
+        table th {
             background-color: #b81313;
             color: white;
         }
 
-        .machine-finder-section {
-            border: 2px solid #FF0000;
+        .update-section, .machine-finder-section {
+            border: 2px solid red;
             padding: 15px;
-            margin-top: 20px;
-            max-width: 400px;
-            text-align: center;
-            background-color: #FFE5E5;
-            border-radius: 8px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            width: 100%;
         }
 
+        .update-section h3,
         .machine-finder-section h3 {
-            margin: 0 0 10px 0;
-            color: #FF0000;
+            margin-top: 0;
         }
 
         footer {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
+            text-align: center;
+            margin-top: auto;
             font-size: 12px;
-            color: #1f1e1e;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="page-container">
         <h1>ToolSync Dashboard</h1>
-        
-        <div class="container">
-            <div class="search-form">
-                <input type="text" id="searchMachineId" placeholder="Enter Machine ID">
-                <button onclick="searchByMachine()">Search by Machine</button>
-            </div>
 
-            <div class="tool-list-section">
-                <h2>Tool List</h2>
-                
-                <div class="tool-form">
-                    <input type="text" id="toolName" placeholder="Tool Name">
-                    <input type="text" id="toolId" placeholder="Tool ID">
-                    <input type="text" id="machineId" placeholder="Machine ID">
-                    <input type="date" id="expirationDate" placeholder="Expiration Date">
-                    <button onclick="addOrUpdateTool()">Save Tool</button>
-                </div>
+        <!-- Search by Machine -->
+        <div class="form-section">
+            <input type="text" id="searchMachineId" placeholder="Enter Machine ID">
+            <button onclick="searchByMachine()">Search by Machine</button>
+        </div>
 
-                <table class="tool-table" id="toolTable">
-                    <thead>
-                        <tr>
-                            <th>Tool Name</th>
-                            <th>Tool ID</th>
-                            <th>Machine ID</th>
-                            <th>Expiration Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="toolList">
-                        <!-- Tool items will appear here -->
-                    </tbody>
-                </table>
+        <!-- Tool List Section -->
+        <div class="tool-list-section">
+            <h2>Tool List</h2>
+            <div class="form-section">
+                <input type="text" id="toolName" placeholder="Tool Name">
+                <input type="text" id="toolId" placeholder="Tool ID">
+                <input type="text" id="machineId" placeholder="Machine ID">
+                <input type="date" id="expirationDate">
+                <button onclick="addOrUpdateTool()">Save Tool</button>
             </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tool Name</th>
+                        <th>Tool ID</th>
+                        <th>Machine ID</th>
+                        <th>Expiration Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="toolList">
+                    <!-- Tools will load here -->
+                </tbody>
+            </table>
+        </div>
 
-            <div class="update-section">
-                <h3>Update Tool Expiration Date</h3>
-                <div class="update-form">
-                    <input type="text" id="updateToolId" placeholder="Tool ID">
-                    <input type="date" id="updateExpirationDate" placeholder="New Expiration Date">
-                    <button onclick="updateExpirationDate()">Update Expiration Date</button>
-                </div>
+        <!-- Update Tool Expiration Section -->
+        <div class="update-section">
+            <h3>Update Tool Expiration Date</h3>
+            <div class="form-section">
+                <input type="text" id="updateToolId" placeholder="Tool ID">
+                <input type="date" id="updateExpirationDate">
+                <button onclick="updateExpirationDate()">Update Expiration Date</button>
             </div>
+        </div>
 
-            <div class="machine-finder-section">
-                <h3>Machine Finder</h3>
-                <div class="machine-finder">
-                    <input type="text" id="findToolId" placeholder="Enter Tool ID">
-                    <button onclick="findMachine()">Find Machine</button>
-                </div>
-                <div id="machineFinderResult" style="text-align: center; margin-top: 10px;"></div>
+        <!-- Machine Finder Section -->
+        <div class="machine-finder-section">
+            <h3>Machine Finder</h3>
+            <div class="form-section">
+                <input type="text" id="findToolId" placeholder="Enter Tool ID">
+                <button onclick="findMachine()">Find Machine</button>
             </div>
+            <div id="machineFinderResult" style="margin-top: 10px;"></div>
         </div>
 
         <footer>Created by Jaden Sittig</footer>
     </div>
 
     <script>
+        const toolList = document.getElementById('toolList');
+        let tools = [];
+        let editIndex = -1;
+
         document.addEventListener('DOMContentLoaded', () => {
-            // Machine Finder Input
-            const findToolIdInput = document.getElementById('findToolId');
-            findToolIdInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    findMachine();
-                }
-            });
-
-            // Search by Machine Input
-            const searchMachineIdInput = document.getElementById('searchMachineId');
-            searchMachineIdInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    searchByMachine();
-                }
-            });
-
-            // Update Expiration Form
-            const updateToolIdInput = document.getElementById('updateToolId');
-            const updateExpirationDateInput = document.getElementById('updateExpirationDate');
-
-            [updateToolIdInput, updateExpirationDateInput].forEach(input => {
-                input.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        updateExpirationDate();
-                    }
-                });
-            });
-
-            // Add or Update Tool Form
-            const toolFormInputs = [
+            // Save Tool Form
+            const saveToolInputs = [
                 document.getElementById('toolName'),
                 document.getElementById('toolId'),
                 document.getElementById('machineId'),
                 document.getElementById('expirationDate'),
             ];
-
-            toolFormInputs.forEach(input => {
-                input.addEventListener('keydown', (event) => {
+            saveToolInputs.forEach(input => {
+                input.addEventListener('keydown', event => {
                     if (event.key === 'Enter') {
                         addOrUpdateTool();
+                        clearForm(); // Clear the Save Tool form fields
                     }
                 });
             });
-        });
 
-        const toolList = document.getElementById('toolList');
-        let tools = [];
-        let editIndex = -1;
-
-        async function addOrUpdateTool() {
-            const toolName = document.getElementById('toolName').value;
-            const toolId = document.getElementById('toolId').value;
-            const machineId = document.getElementById('machineId').value;
-            const expirationDate = document.getElementById('expirationDate').value;
-
-            if (toolName && toolId && machineId && expirationDate) {
-                const newTool = { name: toolName, id: toolId, machine: machineId, expiration: expirationDate };
-
-                if (editIndex === -1) {
-                    tools.push(newTool);
-                } else {
-                    tools[editIndex] = newTool;
-                    editIndex = -1;
+            // Search by Machine
+            const searchMachineInput = document.getElementById('searchMachineId');
+            searchMachineInput.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    searchByMachine();
+                    searchMachineInput.value = ''; // Clear the input
                 }
+            });
 
-                await saveTools();
-                renderTools();
-                clearForm();
-            }
-        }
-
-        async function saveTools() {
-            try {
-                const response = await fetch('/api/tools', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(tools)
+            // Update Expiration Form
+            const updateExpirationInputs = [
+                document.getElementById('updateToolId'),
+                document.getElementById('updateExpirationDate'),
+            ];
+            updateExpirationInputs.forEach(input => {
+                input.addEventListener('keydown', event => {
+                    if (event.key === 'Enter') {
+                        updateExpirationDate();
+                        updateExpirationInputs.forEach(input => (input.value = '')); // Clear Update Expiration inputs
+                    }
                 });
+            });
 
-                if (!response.ok) {
-                    console.error('Error saving tools data');
+            // Machine Finder
+            const findToolInput = document.getElementById('findToolId');
+            findToolInput.addEventListener('keydown', event => {
+                if (event.key === 'Enter') {
+                    findMachine();
+                    findToolInput.value = ''; // Clear the input
                 }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+            });
+
+            loadTools();
+        });
 
         async function loadTools() {
             try {
@@ -262,7 +235,7 @@
                 tools = data;
                 renderTools();
             } catch (error) {
-                console.error('Error loading tools data:', error);
+                console.error('Error loading tools:', error);
             }
         }
 
@@ -277,12 +250,71 @@
                         <td>${tool.expiration}</td>
                         <td>
                             <button onclick="editTool(${index})">Edit</button>
-                            <button onclick="deleteTool(${index})" style="margin-left: 5px; background-color: red; color: white;">Delete</button>
+                            <button onclick="deleteTool(${index})" style="background-color: red; color: white;">Delete</button>
                         </td>
                     </tr>
                 `;
                 toolList.innerHTML += row;
             });
+        }
+
+        function addOrUpdateTool() {
+            const toolName = document.getElementById('toolName').value.trim();
+            const toolId = document.getElementById('toolId').value.trim();
+            const machineId = document.getElementById('machineId').value.trim();
+            const expirationDate = document.getElementById('expirationDate').value;
+
+            if (toolName && toolId && machineId && expirationDate) {
+                const newTool = { name: toolName, id: toolId, machine: machineId, expiration: expirationDate };
+
+                if (editIndex === -1) {
+                    tools.push(newTool); // Add new tool
+                } else {
+                    tools[editIndex] = newTool; // Update existing tool
+                    editIndex = -1; // Reset edit index
+                }
+
+                saveTools(); // Save changes to backend
+                renderTools(); // Refresh tool list
+                clearForm(); // Clear form fields
+            } else {
+                alert('Please fill in all fields.');
+            }
+        }
+
+        function updateExpirationDate() {
+            const toolId = document.getElementById('updateToolId').value.trim();
+            const newExpirationDate = document.getElementById('updateExpirationDate').value;
+
+            const tool = tools.find(t => t.id === toolId);
+
+            if (tool) {
+                tool.expiration = newExpirationDate;
+                saveTools();
+                renderTools();
+            } else {
+                alert('Tool not found.');
+            }
+        }
+
+        function searchByMachine() {
+            const machineId = document.getElementById('searchMachineId').value.trim();
+
+            if (machineId) {
+                const filteredTools = tools.filter(tool => tool.machine === machineId);
+                renderTools(filteredTools);
+            } else {
+                renderTools(); // Show all tools if no input
+            }
+        }
+
+        function findMachine() {
+            const toolId = document.getElementById('findToolId').value.trim();
+            const tool = tools.find(t => t.id === toolId);
+            const resultDiv = document.getElementById('machineFinderResult');
+            resultDiv.textContent = tool
+                ? `Tool ID ${tool.id} belongs to Machine ID ${tool.machine}`
+                : 'Tool ID not found.';
         }
 
         function editTool(index) {
@@ -291,15 +323,27 @@
             document.getElementById('toolId').value = tool.id;
             document.getElementById('machineId').value = tool.machine;
             document.getElementById('expirationDate').value = tool.expiration;
-            editIndex = index;
+            editIndex = index; // Track which tool is being edited
         }
 
         function deleteTool(index) {
-            const confirmDelete = confirm("Are you sure you want to delete this tool?");
-            if (confirmDelete) {
-                tools.splice(index, 1);
+            if (confirm('Are you sure you want to delete this tool?')) {
+                tools.splice(index, 1); // Remove the tool at the given index
                 saveTools();
                 renderTools();
+            }
+        }
+
+        async function saveTools() {
+            try {
+                const response = await fetch('/api/tools', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(tools),
+                });
+                if (!response.ok) console.error('Failed to save tools.');
+            } catch (error) {
+                console.error('Error saving tools:', error);
             }
         }
 
@@ -309,51 +353,6 @@
             document.getElementById('machineId').value = '';
             document.getElementById('expirationDate').value = '';
         }
-
-        async function updateExpirationDate() {
-            const toolId = document.getElementById('updateToolId').value;
-            const newExpirationDate = document.getElementById('updateExpirationDate').value;
-
-            if (toolId && newExpirationDate) {
-                const tool = tools.find(t => t.id === toolId);
-
-                if (tool) {
-                    tool.expiration = newExpirationDate;
-                    await saveTools();
-                    renderTools();
-                    document.getElementById('updateToolId').value = '';
-                    document.getElementById('updateExpirationDate').value = '';
-                } else {
-                    alert('Tool ID not found.');
-                }
-            } else {
-                alert('Please enter both Tool ID and the new expiration date.');
-            }
-        }
-
-        function searchByMachine() {
-            const machineId = document.getElementById('searchMachineId').value;
-            if (machineId) {
-                const filteredTools = tools.filter(tool => tool.machine === machineId);
-                renderTools(filteredTools);
-            } else {
-                renderTools();
-            }
-        }
-
-        function findMachine() {
-            const toolId = document.getElementById('findToolId').value;
-            const tool = tools.find(t => t.id === toolId);
-            const resultDiv = document.getElementById('machineFinderResult');
-
-            if (tool) {
-                resultDiv.textContent = `Tool ID ${tool.id} belongs to Machine ID ${tool.machine}`;
-            } else {
-                resultDiv.textContent = 'Tool ID not found';
-            }
-        }
-
-        loadTools();
     </script>
 </body>
 </html>
