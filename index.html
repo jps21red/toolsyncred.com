@@ -112,6 +112,25 @@
            color: #555;
        }
    </style>
+
+   <!-- Firebase SDKs -->
+   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+   <script>
+       // Firebase Configuration
+       const firebaseConfig = {
+           apiKey: "AIzaSyCASFqlOi7mnnf8Gdh2xWcpwWQCmO81BkU",
+           authDomain: "toolsync-7ae52.firebaseapp.com",
+           projectId: "toolsync-7ae52",
+           storageBucket: "toolsync-7ae52.firebasestorage.app",
+           messagingSenderId: "871038682284",
+           appId: "1:871038682284:web:a81aa349a7aeb2502e8b09"
+       };
+
+       // Initialize Firebase
+       const app = firebase.initializeApp(firebaseConfig);
+       const db = firebase.firestore();
+   </script>
 </head>
 <body>
    <div class="container">
