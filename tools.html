@@ -167,6 +167,52 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Machine Finder Input
+            const findToolIdInput = document.getElementById('findToolId');
+            findToolIdInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    findMachine();
+                }
+            });
+
+            // Search by Machine Input
+            const searchMachineIdInput = document.getElementById('searchMachineId');
+            searchMachineIdInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    searchByMachine();
+                }
+            });
+
+            // Update Expiration Form
+            const updateToolIdInput = document.getElementById('updateToolId');
+            const updateExpirationDateInput = document.getElementById('updateExpirationDate');
+
+            [updateToolIdInput, updateExpirationDateInput].forEach(input => {
+                input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        updateExpirationDate();
+                    }
+                });
+            });
+
+            // Add or Update Tool Form
+            const toolFormInputs = [
+                document.getElementById('toolName'),
+                document.getElementById('toolId'),
+                document.getElementById('machineId'),
+                document.getElementById('expirationDate'),
+            ];
+
+            toolFormInputs.forEach(input => {
+                input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        addOrUpdateTool();
+                    }
+                });
+            });
+        });
+
         const toolList = document.getElementById('toolList');
         let tools = [];
         let editIndex = -1;

@@ -128,7 +128,7 @@
        <!-- Password input box for access -->
        <div class="password-box">
            <input type="password" id="password" placeholder="Enter Password">
-           <button onclick="checkPassword()">Enter</button>
+           <button id="submitButton">Enter</button>
        </div>
 
        <!-- Footer text for creator credit inside the container, bottom left -->
@@ -136,6 +136,7 @@
    </div>
 
    <script>
+       // Check password function
        function checkPassword() {
            const password = document.getElementById('password').value;
            if (password === '0495') {
@@ -144,6 +145,18 @@
                alert("Incorrect password. Please try again.");
            }
        }
+
+       // Add event listener to the "Enter" key
+       document.getElementById('password').addEventListener('keyup', function(event) {
+           if (event.key === 'Enter') {
+               checkPassword(); // Call the checkPassword function
+           }
+       });
+
+       // Add event listener to the button click
+       document.getElementById('submitButton').addEventListener('click', function() {
+           checkPassword(); // Call the checkPassword function
+       });
    </script>
 </body>
 </html>
