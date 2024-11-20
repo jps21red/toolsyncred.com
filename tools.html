@@ -159,19 +159,39 @@
         </div>
 
         <!-- Machine Finder Section -->
-        <div class="machine-finder-section">
+        <div id="machineFinderSection" class="machine-finder-section">
             <h3>Machine Finder</h3>
             <div class="form-section">
                 <input type="text" id="findToolId" placeholder="Enter Tool ID">
-                <button onclick="findMachine()">Find Machine</button>
+                <button id="machineFinderButton">Find Machine</button>
             </div>
             <div id="machineFinderResult" style="margin-top: 10px;"></div>
         </div>
+        
 
         <footer>Created by Jaden Sittig</footer>
     </div>
 
-    <script>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc,  } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+// Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCASFqlOi7mnnf8Gdh2xWcpwWQCmO81BkU",
+    authDomain: "toolsync-7ae52.firebaseapp.com",
+    projectId:"toolsync-7ae52",
+    storageBucket: "toolsync-7ae52.firebasestorage.app",
+    messagingSenderId: "871038682284",
+    appId: "1:871038682284:web:a81aa349a7aeb2502e8b09" 
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+console.log("Firebase has been initialized and Firestore is ready:", db);
+
         const toolList = document.getElementById('toolList');
         let tools = [];
         let editIndex = -1;
@@ -193,28 +213,33 @@
                 });
             });
 
-            // Search by Machine
-            const searchMachineInput = document.getElementById('searchMachineId');
-            searchMachineInput.addEventListener('keydown', event => {
-                if (event.key === 'Enter') {
-                    searchByMachine();
-                    searchMachineInput.value = ''; // Clear the input
-                }
-            });
+           // Search by Machine function
+function searchByMachine() {
+    const machineInput = document.getElementById('searchMachineId');
+    const machineId = machineInput.value.trim();
 
-            // Update Expiration Form
-            const updateExpirationInputs = [
-                document.getElementById('updateToolId'),
-                document.getElementById('updateExpirationDate'),
-            ];
-            updateExpirationInputs.forEach(input => {
-                input.addEventListener('keydown', event => {
-                    if (event.key === 'Enter') {
-                        updateExpirationDate();
-                        updateExpirationInputs.forEach(input => (input.value = '')); // Clear Update Expiration inputs
-                    }
-                });
-            });
+    if (machineId) {
+        const filteredTools = tools.filter(tool => tool.machine === machineId);
+        renderTools(filteredTools); // Show only tools for the entered machine ID
+    } else {
+        renderTools(); // Show all tools if no input
+    }
+
+    machineInput.value = ''; // Clear the input field
+    console.log(`Searched for machine ID: ${machineId}`);
+}
+
+// Attach to global scope
+window.searchByMachine = searchByMachine;
+
+// Add Enter key functionality
+const searchMachineInput = document.getElementById('searchMachineId');
+searchMachineInput.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+        searchByMachine();
+    }
+});
+
 
             // Machine Finder
             const findToolInput = document.getElementById('findToolId');
@@ -228,124 +253,233 @@
             loadTools();
         });
 
+      
         async function loadTools() {
-            try {
-                const response = await fetch('/api/tools');
-                const data = await response.json();
-                tools = data;
-                renderTools();
-            } catch (error) {
-                console.error('Error loading tools:', error);
-            }
+    try {
+        const querySnapshot = await getDocs(collection(db, "tools")); // Fetch from Firestore
+        tools = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Map Firestore data
+        renderTools(); // Render the tools on the page
+    } catch (error) {
+        console.error("Error loading tools from Firestore:", error);
+    }
+}
+
+function renderTools(filteredTools = tools) {
+    // Clear the existing tool list onclick 
+    toolList.innerHTML = '';
+
+    // Loop through the filtered tools and generate rows for each
+    filteredTools.forEach((tool, index) => {
+        const row = `
+            <tr>
+                <td>${tool.name}</td>
+                <td>${tool.id}</td>
+                <td>${tool.machine}</td>
+                <td>${tool.expiration}</td>
+                <td>
+                    <!-- Edit button -->
+                    <button="editTool(${index})">Edit</button>
+                    
+                    <!-- Delete button -->
+                    <button onclick="deleteTool('${tool.id}')" 
+                        style="background-color: red; color: white;">Delete</button>
+                </td>
+            </tr>
+        `;
+        // Add the generated row to the tool list
+        toolList.innerHTML += row;
+    });
+}
+
+
+async function addOrUpdateTool() {
+    const toolNameInput = document.getElementById('toolName');
+    const toolIdInput = document.getElementById('toolId');
+    const machineIdInput = document.getElementById('machineId');
+    const expirationDateInput = document.getElementById('expirationDate');
+
+    const toolName = toolNameInput.value.trim();
+    const toolId = toolIdInput.value.trim();
+    const machineId = machineIdInput.value.trim();
+    const expirationDate = expirationDateInput.value;
+
+    if (toolName && toolId && machineId && expirationDate) {
+        const newTool = { name: toolName, id: toolId, machine: machineId, expiration: expirationDate };
+
+        try {
+            await setDoc(doc(db, "tools", toolId), newTool); // Add or update the tool in Firestore
+            console.log(`Tool saved: ${JSON.stringify(newTool)}`);
+            loadTools(); // Refresh the tools list
+        } catch (error) {
+            console.error("Error saving tool to Firestore:", error);
         }
+    } else {
+        alert('Please fill in all fields.');
+    }
 
-        function renderTools(filteredTools = tools) {
-            toolList.innerHTML = '';
-            filteredTools.forEach((tool, index) => {
-                const row = `
-                    <tr>
-                        <td>${tool.name}</td>
-                        <td>${tool.id}</td>
-                        <td>${tool.machine}</td>
-                        <td>${tool.expiration}</td>
-                        <td>
-                            <button onclick="editTool(${index})">Edit</button>
-                            <button onclick="deleteTool(${index})" style="background-color: red; color: white;">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                toolList.innerHTML += row;
-            });
+    // Clear the input fields after saving
+    toolNameInput.value = '';
+    toolIdInput.value = '';
+    machineIdInput.value = '';
+    expirationDateInput.value = '';
+}
+
+// Attach to global scope
+window.addOrUpdateTool = addOrUpdateTool;
+
+// Add an event listener for the Enter key in any of the Save Tool input fields
+['toolName', 'toolId', 'machineId', 'expirationDate'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            addOrUpdateTool(); // Trigger Save Tool on Enter key
         }
+    });
+});
 
-        function addOrUpdateTool() {
-            const toolName = document.getElementById('toolName').value.trim();
-            const toolId = document.getElementById('toolId').value.trim();
-            const machineId = document.getElementById('machineId').value.trim();
-            const expirationDate = document.getElementById('expirationDate').value;
+document.addEventListener('DOMContentLoaded', () => {
+    // Get the input field and button elements
+    const toolIdInput = document.getElementById('findToolId');
+    const machineFinderButton = document.getElementById('machineFinderButton');
+    const resultDiv = document.getElementById('machineFinderResult');
 
-            if (toolName && toolId && machineId && expirationDate) {
-                const newTool = { name: toolName, id: toolId, machine: machineId, expiration: expirationDate };
+    // Define the function to find the machine
+    function findMachine() {
+        const toolId = toolIdInput.value.trim(); // Get the value entered by the user
 
-                if (editIndex === -1) {
-                    tools.push(newTool); // Add new tool
-                } else {
-                    tools[editIndex] = newTool; // Update existing tool
-                    editIndex = -1; // Reset edit index
-                }
-
-                saveTools(); // Save changes to backend
-                renderTools(); // Refresh tool list
-                clearForm(); // Clear form fields
-            } else {
-                alert('Please fill in all fields.');
-            }
-        }
-
-        function updateExpirationDate() {
-            const toolId = document.getElementById('updateToolId').value.trim();
-            const newExpirationDate = document.getElementById('updateExpirationDate').value;
-
-            const tool = tools.find(t => t.id === toolId);
+        if (toolId) {
+            const tool = tools.find(t => t.id === toolId); // Search the tools array for the ID
 
             if (tool) {
-                tool.expiration = newExpirationDate;
-                saveTools();
-                renderTools();
+                resultDiv.textContent = `Tool ID ${tool.id} belongs to Machine ID ${tool.machine}`;
             } else {
-                alert('Tool not found.');
+                resultDiv.textContent = 'Tool ID not found.';
             }
+
+            console.log(`Searched for Tool ID: ${toolId}`);
+        } else {
+            console.log("No Tool ID entered.");
+            resultDiv.textContent = "Please enter a Tool ID.";
         }
+
+        // Clear the input field after searching
+        toolIdInput.value = '';
+    }
+
+    // Attach event listeners for Enter key and button click
+    if (toolIdInput && machineFinderButton) {
+        // Listen for Enter key
+        toolIdInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                findMachine();
+            }
+        });
+
+        // Listen for button click
+        machineFinderButton.addEventListener('click', findMachine);
+    } else {
+        console.error("Could not find the required elements: 'findToolId' or 'machineFinderButton'.");
+    }
+});
+
+
+async function updateExpirationDate() {
+    const toolIdInput = document.getElementById('updateToolId');
+    const expirationDateInput = document.getElementById('updateExpirationDate');
+
+    const toolId = toolIdInput.value.trim();
+    const newExpirationDate = expirationDateInput.value;
+
+    const tool = tools.find(t => t.id === toolId);
+
+    if (tool) {
+        try {
+            tool.expiration = newExpirationDate;
+            await setDoc(doc(db, "tools", toolId), tool); // Save updated tool in Firestore
+            console.log(`Expiration date updated for Tool ID: ${toolId}`);
+            loadTools(); // Refresh the tools list
+        } catch (error) {
+            console.error("Error updating expiration date in Firestore:", error);
+        }
+    } else {
+        alert('Tool not found.');
+    }
+
+    // Clear the input fields after updating
+    toolIdInput.value = '';
+    expirationDateInput.value = '';
+    console.log("Update Expiration Date inputs cleared");
+}
+
+// Attach to global scope
+window.updateExpirationDate = updateExpirationDate;
+
+// Add an event listener for the Enter key
+document.getElementById('updateToolId').addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+        updateExpirationDate();
+    }
+});
+document.getElementById('updateExpirationDate').addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+        updateExpirationDate();
+    }
+});
+
 
         function searchByMachine() {
-            const machineId = document.getElementById('searchMachineId').value.trim();
+    const machineId = document.getElementById('searchMachineId').value.trim();
+    if (machineId) {
+        const filteredTools = tools.filter(tool => tool.machine === machineId);
+        renderTools(filteredTools);
+    } else {
+        renderTools(); // Show all tools if no input
+    }
+    console.log(`Searching for tools on machine: ${machineId}`);
+}
 
-            if (machineId) {
-                const filteredTools = tools.filter(tool => tool.machine === machineId);
-                renderTools(filteredTools);
-            } else {
-                renderTools(); // Show all tools if no input
-            }
-        }
+// Attach to global scope
+window.searchByMachine = searchByMachine;
 
-        function findMachine() {
-            const toolId = document.getElementById('findToolId').value.trim();
-            const tool = tools.find(t => t.id === toolId);
-            const resultDiv = document.getElementById('machineFinderResult');
-            resultDiv.textContent = tool
-                ? `Tool ID ${tool.id} belongs to Machine ID ${tool.machine}`
-                : 'Tool ID not found.';
-        }
+
+
+
+
 
         function editTool(index) {
-            const tool = tools[index];
-            document.getElementById('toolName').value = tool.name;
-            document.getElementById('toolId').value = tool.id;
-            document.getElementById('machineId').value = tool.machine;
-            document.getElementById('expirationDate').value = tool.expiration;
-            editIndex = index; // Track which tool is being edited
-        }
+    const tool = tools[index]; // Access the tool at the given index
+    document.getElementById('toolName').value = tool.name;
+    document.getElementById('toolId').value = tool.id;
+    document.getElementById('machineId').value = tool.machine;
+    document.getElementById('expirationDate').value = tool.expiration;
 
-        function deleteTool(index) {
-            if (confirm('Are you sure you want to delete this tool?')) {
-                tools.splice(index, 1); // Remove the tool at the given index
-                saveTools();
-                renderTools();
-            }
-        }
+    // Optionally, log to confirm the edit is triggered
+    console.log(`Editing tool at index ${index}:`, tool);
+}
 
-        async function saveTools() {
-            try {
-                const response = await fetch('/api/tools', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(tools),
-                });
-                if (!response.ok) console.error('Failed to save tools.');
-            } catch (error) {
-                console.error('Error saving tools:', error);
-            }
+// Add this line to make the function globally accessible
+window.editTool = editTool;
+
+
+      
+        async function deleteTool(id) {
+    if (confirm("Are you sure you want to delete this tool?")) {
+        try {
+            await deleteDoc(doc(db, "tools", id)); // Deletes the document from Firestore
+            console.log(`Tool with ID ${id} deleted successfully`);
+            loadTools(); // Refresh the tools list
+        } catch (error) {
+            console.error("Error deleting tool from Firestore:", error);
         }
+    }
+}
+
+// Add this line
+window.deleteTool = deleteTool;
+
+
+
+
 
         function clearForm() {
             document.getElementById('toolName').value = '';
