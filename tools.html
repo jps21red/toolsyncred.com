@@ -5,6 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToolSync Dashboard</title>
     <style>
+        .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
         * {
             box-sizing: border-box;
         }
@@ -265,7 +286,7 @@ searchMachineInput.addEventListener('keydown', event => {
 }
 
 function renderTools(filteredTools = tools) {
-    // Clear the existing tool list onclick 
+    // Clear the existing tool list
     toolList.innerHTML = '';
 
     // Loop through the filtered tools and generate rows for each
@@ -278,7 +299,7 @@ function renderTools(filteredTools = tools) {
                 <td>${tool.expiration}</td>
                 <td>
                     <!-- Edit button -->
-                    <button="editTool(${index})">Edit</button>
+                    <button onclick="editTool(${index})">Edit</button>
                     
                     <!-- Delete button -->
                     <button onclick="deleteTool('${tool.id}')" 
@@ -290,6 +311,7 @@ function renderTools(filteredTools = tools) {
         toolList.innerHTML += row;
     });
 }
+
 
 
 async function addOrUpdateTool() {
@@ -446,19 +468,65 @@ window.searchByMachine = searchByMachine;
 
 
 
-        function editTool(index) {
-    const tool = tools[index]; // Access the tool at the given index
-    document.getElementById('toolName').value = tool.name;
-    document.getElementById('toolId').value = tool.id;
-    document.getElementById('machineId').value = tool.machine;
-    document.getElementById('expirationDate').value = tool.expiration;
+function editTool(index) {
+    const tool = tools[index]; // Get the tool by index
 
-    // Optionally, log to confirm the edit is triggered
-    console.log(`Editing tool at index ${index}:`, tool);
+    // Populate the modal fields with the tool's data
+    document.getElementById('editToolName').value = tool.name;
+    document.getElementById('editToolId').value = tool.id;
+    document.getElementById('editMachineId').value = tool.machine;
+    document.getElementById('editExpirationDate').value = tool.expiration;
+
+    // Show the modal
+    document.getElementById('editModal').style.display = 'flex';
+
+    // Save the index globally so it can be used in the save function
+    window.currentEditIndex = index;
 }
 
-// Add this line to make the function globally accessible
+
+async function saveEdit() {
+    // Get the index of the tool being edited
+    const index = window.currentEditIndex;
+
+    if (index !== undefined) {
+        // Update the tool's data locally
+        tools[index].name = document.getElementById('editToolName').value;
+        tools[index].machine = document.getElementById('editMachineId').value;
+        tools[index].expiration = document.getElementById('editExpirationDate').value;
+
+        // Save the updated tool to Firebase
+        try {
+            const toolId = tools[index].id; // Tool ID should be part of the tool object
+            await setDoc(doc(db, "tools", toolId), {
+                name: tools[index].name,
+                machine: tools[index].machine,
+                expiration: tools[index].expiration
+            });
+            console.log(`Tool with ID ${toolId} successfully updated in Firebase.`);
+        } catch (error) {
+            console.error("Error saving the updated tool to Firebase:", error);
+        }
+
+        // Refresh the tool list
+        renderTools();
+
+        // Close the modal
+        closeModal();
+    } else {
+        console.error("Edit index is not defined.");
+    }
+}
+
+function closeModal() {
+    // Hide the modal
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Attach functions to global scope
 window.editTool = editTool;
+window.saveEdit = saveEdit;
+window.closeModal = closeModal;
 
 
       
@@ -488,5 +556,20 @@ window.deleteTool = deleteTool;
             document.getElementById('expirationDate').value = '';
         }
     </script>
+    <!-- Other HTML content -->
+
+<!-- Add the modal here -->
+<div id="editModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Edit Tool</h3>
+        <input type="text" id="editToolName" placeholder="Tool Name">
+        <input type="text" id="editToolId" placeholder="Tool ID" readonly>
+        <input type="text" id="editMachineId" placeholder="Machine ID">
+        <input type="date" id="editExpirationDate">
+        <button onclick="saveEdit()">Save</button>
+        <button onclick="closeModal()">Cancel</button>
+    </div>
+</div>
+
 </body>
 </html>
