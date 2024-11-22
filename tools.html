@@ -40,13 +40,13 @@
         }
 
         .page-container {
-            width: 900px;
+            width: 800px;
             margin: 50px auto; /* Add space at the top */
             height: 1000px; /* Adjust this to bring the bottom up */
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 5px solid black;
+            border: 2px solid black;
             background-color: white;
             padding: 20px;
             box-sizing: border-box;
@@ -188,9 +188,9 @@
             </div>
             <div id="machineFinderResult" style="margin-top: 10px;"></div>
         </div>
+        
 
-
-        <footer>Created by Jaden Sittig</footer> 
+        <footer>Created by Jaden Sittig</footer>
     </div>
 
     <script type="module">
@@ -286,18 +286,11 @@ searchMachineInput.addEventListener('keydown', event => {
 }
 
 function renderTools(filteredTools = tools) {
-    // Sort tools by expiration date in ascending order (soonest first)
-    const sortedTools = [...filteredTools].sort((a, b) => {
-        const dateA = new Date(a.expiration);
-        const dateB = new Date(b.expiration);
-        return dateA - dateB; // Ascending order
-    });
-
     // Clear the existing tool list
     toolList.innerHTML = '';
 
-    // Loop through the sorted tools and generate rows for each
-    sortedTools.forEach((tool, index) => {
+    // Loop through the filtered tools and generate rows for each
+    filteredTools.forEach((tool, index) => {
         const row = `
             <tr>
                 <td>${tool.name}</td>
@@ -318,8 +311,6 @@ function renderTools(filteredTools = tools) {
         toolList.innerHTML += row;
     });
 }
-window.renderTools = renderTools;
-
 
 
 
@@ -581,4 +572,3 @@ window.deleteTool = deleteTool;
 </div>
 
 </body>
-</html>
