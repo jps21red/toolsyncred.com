@@ -1,138 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToolSync Dashboard</title>
-    <style>
-        .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    text-align: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            overflow: hidden; /* Prevent page scrolling */
-        }
-
-        .page-container {
-            width: 900px;
-            margin: 50px auto; /* Add space at the top */
-            height: 1000px; /* Adjust this to bring the bottom up */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 5px solid black;
-            background-color: white;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .form-section {
-            margin-bottom: 20px;
-        }
-
-        input {
-            padding: 10px;
-            margin: 5px 0;
-            font-size: 14px;
-            width: calc(100% - 20px);
-            max-width: 250px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 14px;
-            margin: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #ddd;
-        }
-
-        .tool-list-section {
-            border: 2px solid red;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            max-height: 300px; /* Fixed height for the tool list */
-            overflow-y: auto; /* Enable scrolling within the tool list */
-            width: 100%;
-        }
-
-        .tool-list-section h2 {
-            margin-top: 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        table th, table td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-
-        table th {
-            background-color: #b81313;
-            color: white;
-        }
-
-        .update-section, .machine-finder-section {
-            border: 2px solid red;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            width: 100%;
-        }
-
-        .update-section h3,
-        .machine-finder-section h3 {
-            margin-top: 0;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: auto;
-            font-size: 12px;
-            color: #666;
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ToolSync Dashboard</title>
+        <style>
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            .modal-content {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                width: 300px;
+                text-align: center;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            }
+    
+            * {
+                box-sizing: border-box;
+            }
+    
+            /* Updated body and html for scrolling */
+            body, html {
+                margin: 0;
+                padding: 0;
+                height: auto; /* Let the height grow based on content */
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+                overflow-y: auto; /* Allow scrolling for the entire page */
+            }
+    
+            .page-container {
+                width: 900px;
+                margin: 50px auto; /* Add space at the top */
+                min-height: 100vh; /* Ensure the container fills the viewport */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                border: 5px solid black;
+                background-color: white;
+                padding: 20px;
+                box-sizing: border-box;
+            }
+    
+            h1 {
+                margin-bottom: 20px;
+            }
+    
+            .form-section {
+                margin-bottom: 20px;
+            }
+    
+            input {
+                padding: 10px;
+                margin: 5px 0;
+                font-size: 14px;
+                width: calc(100% - 20px);
+                max-width: 250px;
+            }
+    
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+                margin: 5px;
+                cursor: pointer;
+            }
+    
+            button:hover {
+                background-color: #ddd;
+            }
+    
+            .tool-list-section {
+                border: 2px solid red;
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+                max-height: 300px; /* Fixed height for the tool list */
+                overflow-y: auto; /* Enable scrolling within the tool list */
+                width: 100%;
+            }
+    
+            .tool-list-section h2 {
+                margin-top: 0;
+            }
+    
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+    
+            table th, table td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+            }
+    
+            table th {
+                background-color: #b81313;
+                color: white;
+            }
+    
+            .update-section, .machine-finder-section {
+                border: 2px solid red;
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+                width: 100%;
+            }
+    
+            .update-section h3,
+            .machine-finder-section h3 {
+                margin-top: 0;
+            }
+    
+            footer {
+                text-align: center;
+                margin-top: auto;
+                font-size: 12px;
+                color: #666;
+            }
+        </style>
+    </head>
+    
 <body>
     <div class="page-container">
         <h1>ToolSync Dashboard</h1>
