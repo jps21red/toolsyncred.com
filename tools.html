@@ -132,6 +132,99 @@
                 font-size: 12px;
                 color: #666;
             }
+            .expiring-tools-section {
+    border: 2px solid rgb(0, 0, 0);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #ffffff; /* Light red background */
+    width: 100%;
+    color: #1d1818a1; /* Dark red text for urgency */
+    max-height: 150px; /* NEW: Set a maximum height */
+    overflow-y: auto; /* NEW: Enable scrolling for overflow */
+}
+
+.expiring-tools-section h3 {
+    margin-top: 0;
+    color: #ff0000; /* Dark red for the title */
+    font-size: 18px;
+    text-align: center;
+}
+
+.expiring-tools-section .tool-box {
+    display: flex;
+    align-items: center;
+    background-color: #e9000056; /* Slightly darker red box for each tool */
+    border: 1px solid #817171; /* Dark red border for each tool */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgb(0, 0, 0);
+}
+
+.expiring-tools-section .tool-box .warning-icon {
+    font-size: 20px;
+    color: #dadadab4;
+    margin-right: 10px;
+}
+
+.expiring-tools-section .tool-box .tool-info {
+    font-size: 14px;
+    color: #b30000;
+}
+
+.expiring-tools-section .tool-box .tool-info strong {
+    font-weight: bold;
+}
+.expired-tools-section {
+    border: 2px solid rgb(0, 0, 0); /* Red border for urgency */
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    background-color: #ffffff; /* Light red background */
+    width: 100%;
+    max-height: 150px; /* Make it scrollable if needed */
+    overflow-y: auto; /* Enable scrolling */
+}
+
+.expired-tools-section h3 {
+    text-align: center; /* Centers the heading horizontally */
+    color: #ff0707; /* Bold red text for emphasis */
+    font-weight: bold;
+}
+
+.expired-tools-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.expired-tools-section li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+    color: #cc0000;
+    font-weight: bold;
+}
+.tool-bubble {
+    border: 2px solid red; /* Red border for urgency */
+    background-color: #ffe5e5; /* Light red background */
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight shadow for effect */
+    text-align: left; /* Align text inside the bubble */
+}
+
+.tool-bubble strong {
+    color: #cc0000; /* Bold red text for tool name */
+}
+
+.tool-bubble span {
+    display: block; /* Display each detail on a new line */
+    font-size: 14px; /* Slightly smaller font for details */
+    color: #555; /* Neutral text color for details */
+}
+
         </style>
     </head>
     
@@ -190,7 +283,21 @@
             </div>
             <div id="machineFinderResult" style="margin-top: 10px;"></div>
         </div>
-        
+        <!-- Tools Expiring Soon Section -->
+<div id="expiringToolsSection" class="expiring-tools-section">
+    <h3>⚠️ Caution: Tools Expiring Within 2 Weeks ⚠️</h3>
+    <div id="expiringToolsList">
+        <!-- Expiring tools will be dynamically inserted here -->
+    </div>
+</div>
+<!-- Tools Expired Section -->
+<div id="expiredToolsSection" class="expired-tools-section">
+    <h3>⚠️ Tools Expired: Immediate Attention Needed</h3>
+    <ul id="expiredToolsList">
+        <!-- Expired tools will be dynamically added here -->
+    </ul>
+</div>
+
 
         <footer>Created by Jaden Sittig</footer>
     </div>
@@ -557,6 +664,88 @@ window.deleteTool = deleteTool;
             document.getElementById('machineId').value = '';
             document.getElementById('expirationDate').value = '';
         }
+     
+        function showExpiringTools() {
+    const expiringToolsList = document.getElementById("expiringToolsList");
+    expiringToolsList.innerHTML = ""; // Clear the list
+
+    const today = new Date();
+    const twoWeeksLater = new Date();
+    twoWeeksLater.setDate(today.getDate() + 14);
+
+    const expiringTools = tools.filter(tool => {
+        const expirationDate = new Date(tool.expiration);
+        return expirationDate > today && expirationDate <= twoWeeksLater;
+    });
+
+    if (expiringTools.length > 0) {
+        expiringTools.forEach(tool => {
+            const toolBox = document.createElement("div");
+            toolBox.className = "tool-box";
+
+            toolBox.innerHTML = `
+                <div class="warning-icon">⚠️</div>
+                <div class="tool-info">
+                    <strong>${tool.name}</strong><br>
+                    <span>Machine: ${tool.machine}</span><br>
+                    <span>Expires: ${tool.expiration}</span>
+                </div>
+            `;
+
+            expiringToolsList.appendChild(toolBox);
+        });
+    } else {
+        expiringToolsList.innerHTML = "<p>No tools expiring within 2 weeks.</p>";
+    }
+}
+
+// Call this function after loading tools
+loadTools().then(() => {
+    showExpiringTools();
+});
+function showExpiredTools() {
+    const expiredToolsList = document.getElementById("expiredToolsList");
+    expiredToolsList.innerHTML = ""; // Clear the list
+
+    const today = new Date();
+
+    // Filter tools that have already expired
+    const expiredTools = tools.filter(tool => {
+        const expirationDate = new Date(tool.expiration);
+        return expirationDate < today; // Only include tools with past dates
+    });
+
+    if (expiredTools.length > 0) {
+        expiredTools.forEach(tool => {
+            const bubble = document.createElement("div");
+            bubble.className = "tool-bubble";
+           
+            bubble.innerHTML = `
+    <strong>${tool.name}</strong>
+    <span>Machine: ${tool.machine}</span>
+    <span>Expired on: ${tool.expiration}</span>
+`;
+
+
+            expiredToolsList.appendChild(bubble);
+        });
+    } else {
+        const noToolsMessage = document.createElement("p");
+        noToolsMessage.textContent = "No tools have expired.";
+        expiredToolsList.appendChild(noToolsMessage);
+    }
+}
+
+
+// Call this function after loading tools
+loadTools().then(() => {
+    showExpiredTools();
+});
+
+    </script>
+</body>
+</html>
+
     </script>
     <!-- Other HTML content -->
 
@@ -572,5 +761,4 @@ window.deleteTool = deleteTool;
         <button onclick="closeModal()">Cancel</button>
     </div>
 </div>
-
 </body>
