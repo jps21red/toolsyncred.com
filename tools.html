@@ -41,7 +41,7 @@
             }
     
             .page-container {
-                width: 1100px;
+                width: 1110px;
                 margin: 50px auto; /* Add space at the top */
                 min-height: 100vh; /* Ensure the container fills the viewport */
                 display: flex;
@@ -140,7 +140,7 @@
     background-color: #ffffff; /* Light red background */
     width: 100%;
     color: #1d1818a1; /* Dark red text for urgency */
-    max-height: 150px; /* NEW: Set a maximum height */
+    max-height: 300px; /* NEW: Set a maximum height */
     overflow-y: auto; /* NEW: Enable scrolling for overflow */
 }
 
@@ -154,8 +154,8 @@
 .expiring-tools-section .tool-box {
     display: flex;
     align-items: center;
-    background-color: #e9000056; /* Slightly darker red box for each tool */
-    border: 1px solid #817171; /* Dark red border for each tool */
+    background-color: #ffe60069; /* light red box for warning around tools expiring */
+    border: 1px solid #000000; /* Dark red border for each tool */
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
@@ -170,7 +170,7 @@
 
 .expiring-tools-section .tool-box .tool-info {
     font-size: 14px;
-    color: #b30000;
+    color: #000000;
 }
 
 .expiring-tools-section .tool-box .tool-info strong {
@@ -183,13 +183,13 @@
     border-radius: 5px;
     background-color: #ffffff; /* Light red background */
     width: 100%;
-    max-height: 150px; /* Make it scrollable if needed */
+    max-height: 300px; /* Make it scrollable if needed */
     overflow-y: auto; /* Enable scrolling */
 }
 
 .expired-tools-section h3 {
     text-align: center; /* Centers the heading horizontally */
-    color: #ff0707; /* Bold red text for emphasis */
+    color: #ff0101; /* Bold red text for emphasis */
     font-weight: bold;
 }
 
@@ -204,10 +204,11 @@
     border-bottom: 1px solid #ddd;
     color: #cc0000;
     font-weight: bold;
+
 }
 .tool-bubble {
-    border: 2px solid red; /* Red border for urgency */
-    background-color: #ffe5e5; /* Light red background */
+    border: 2px solid rgb(0, 0, 0); /* Red border for urgency */
+    background-color: #ff000096; /* Light red background */
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 10px; /* Rounded corners */
@@ -216,13 +217,13 @@
 }
 
 .tool-bubble strong {
-    color: #cc0000; /* Bold red text for tool name */
+    color: #000000; /* Bold red text for tool name */
 }
 
 .tool-bubble span {
     display: block; /* Display each detail on a new line */
     font-size: 14px; /* Slightly smaller font for details */
-    color: #555; /* Neutral text color for details */
+    color: #000000; /* Neutral text color for details */
 }
 
         </style>
@@ -297,7 +298,6 @@
         <!-- Expired tools will be dynamically added here -->
     </ul>
 </div>
-
 
         <footer>Created by Jaden Sittig</footer>
     </div>
@@ -608,6 +608,7 @@ async function saveEdit() {
         try {
             const toolId = tools[index].id; // Tool ID should be part of the tool object
             await setDoc(doc(db, "tools", toolId), {
+                id: tools[index].id,
                 name: tools[index].name,
                 machine: tools[index].machine,
                 expiration: tools[index].expiration
@@ -683,14 +684,17 @@ window.deleteTool = deleteTool;
             const toolBox = document.createElement("div");
             toolBox.className = "tool-box";
 
-            toolBox.innerHTML = `
-                <div class="warning-icon">⚠️</div>
-                <div class="tool-info">
-                    <strong>${tool.name}</strong><br>
-                    <span>Machine: ${tool.machine}</span><br>
-                    <span>Expires: ${tool.expiration}</span>
-                </div>
-            `;
+
+
+toolBox.innerHTML = `
+  <div class="warning-icon">⚠️</div>
+  <div class="tool-info">
+    <strong>${tool.name}</strong><br>
+    <span>ID: ${tool.id}</span><br>
+    <span>Machine: ${tool.machine}</span><br>
+    <span>Expires: ${tool.expiration}</span>
+  </div>
+`;
 
             expiringToolsList.appendChild(toolBox);
         });
@@ -721,7 +725,9 @@ function showExpiredTools() {
             bubble.className = "tool-bubble";
            
             bubble.innerHTML = `
+
     <strong>${tool.name}</strong>
+    <span>ID: ${tool.id}</span> 
     <span>Machine: ${tool.machine}</span>
     <span>Expired on: ${tool.expiration}</span>
 `;
