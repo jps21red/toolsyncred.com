@@ -225,6 +225,23 @@
     font-size: 14px; /* Slightly smaller font for details */
     color: #000000; /* Neutral text color for details */
 }
+.tool-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.tool-info {
+  flex: 1;
+}
+
+.engage-lab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+}
 
         </style>
     </head>
@@ -688,13 +705,22 @@ window.deleteTool = deleteTool;
 
 toolBox.innerHTML = `
   <div class="warning-icon">⚠️</div>
-  <div class="tool-info">
-    <strong>${tool.name}</strong><br>
-    <span>ID: ${tool.id}</span><br>
-    <span>Machine: ${tool.machine}</span><br>
-    <span>Expires: ${tool.expiration}</span>
+
+  <div class="tool-container">
+    <div class="tool-info">
+      <strong>${tool.name}</strong><br>
+      <span>ID: ${tool.id}</span><br>
+      <span>Machine: ${tool.machine}</span><br>
+      <span>Expires: ${tool.expiration}</span>
+    </div>
+
+    <div class="engage-lab">
+      <input type="checkbox" id="engage-${tool.id}"> 
+      <label for="engage-${tool.id}">In Gauge Lab</label>
+    </div>
   </div>
 `;
+
 
             expiringToolsList.appendChild(toolBox);
         });
@@ -724,13 +750,22 @@ function showExpiredTools() {
             const bubble = document.createElement("div");
             bubble.className = "tool-bubble";
            
-            bubble.innerHTML = `
+         bubble.innerHTML = `
+  <div class="tool-container">
+    <div class="tool-info">
+      <strong>${tool.name}</strong>
+      <span>ID: ${tool.id}</span>
+      <span>Machine: ${tool.machine}</span>
+      <span>Expired on: ${tool.expiration}</span>
+    </div>
 
-    <strong>${tool.name}</strong>
-    <span>ID: ${tool.id}</span> 
-    <span>Machine: ${tool.machine}</span>
-    <span>Expired on: ${tool.expiration}</span>
+    <div class="engage-lab">
+      <input type="checkbox" id="engage-exp-${tool.id}">
+      <label for="engage-exp-${tool.id}">In Gauge Lab</label>
+    </div>
+  </div>
 `;
+
 
 
             expiredToolsList.appendChild(bubble);
