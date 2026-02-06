@@ -440,6 +440,7 @@ function renderTools(filteredTools = tools) {
 
 
 
+
 async function addOrUpdateTool() {
     const toolNameInput = document.getElementById('toolName');
     const toolIdInput = document.getElementById('toolId');
@@ -452,12 +453,23 @@ async function addOrUpdateTool() {
     const expirationDate = expirationDateInput.value;
 
     if (toolName && toolId && machineId && expirationDate) {
-        const newTool = { name: toolName, id: toolId, machine: machineId, expiration: expirationDate };
+        const newTool = {
+            name: toolName,
+            id: toolId,
+            machine: machineId,
+            expiration: expirationDate,
+            inGaugeLab: false // reset the checkbox state
+        };
 
         try {
-            await setDoc(doc(db, "tools", toolId), newTool); // Add or update the tool in Firestore
+            await setDoc(doc(db, "tools", toolId), newTool);
             console.log(`Tool saved: ${JSON.stringify(newTool)}`);
-            loadTools(); // Refresh the tools list
+
+            // Re-fetch the tools and re-render sections
+            await loadTools();
+            renderTools();
+            showExpiringTools();
+            showExpiredTools();
         } catch (error) {
             console.error("Error saving tool to Firestore:", error);
         }
@@ -483,6 +495,7 @@ window.addOrUpdateTool = addOrUpdateTool;
         }
     });
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Get the input field and button elements
@@ -723,6 +736,16 @@ toolBox.innerHTML = `
 
 
             expiringToolsList.appendChild(toolBox);
+           const checkbox = toolBox.querySelector(`#engage-${tool.id}`);
+
+// load saved state from Firebase
+checkbox.checked = tool.inGaugeLab || false;
+
+// save when clicked
+checkbox.addEventListener("change", () => {
+  updateGaugeLabStatus(tool.id, checkbox.checked);
+});
+ 
         });
     } else {
         expiringToolsList.innerHTML = "<p>No tools expiring within 2 weeks.</p>";
@@ -750,7 +773,7 @@ function showExpiredTools() {
             const bubble = document.createElement("div");
             bubble.className = "tool-bubble";
            
-         bubble.innerHTML = `
+bubble.innerHTML = `
   <div class="tool-container">
     <div class="tool-info">
       <strong>${tool.name}</strong>
@@ -766,6 +789,12 @@ function showExpiredTools() {
   </div>
 `;
 
+const checkbox = bubble.querySelector(`#engage-exp-${tool.id}`);
+checkbox.checked = tool.inGaugeLab || false;
+checkbox.addEventListener("change", () => {
+  updateGaugeLabStatus(tool.id, checkbox.checked);
+});
+
 
 
             expiredToolsList.appendChild(bubble);
@@ -774,6 +803,14 @@ function showExpiredTools() {
         const noToolsMessage = document.createElement("p");
         noToolsMessage.textContent = "No tools have expired.";
         expiredToolsList.appendChild(noToolsMessage);
+    }
+}
+async function updateGaugeLabStatus(toolId, checked) {
+    try {
+        const toolRef = doc(db, "tools", toolId);
+        await setDoc(toolRef, { inGaugeLab: checked }, { merge: true });
+    } catch (error) {
+        console.error("Error updating inGaugeLab status:", error);
     }
 }
 
